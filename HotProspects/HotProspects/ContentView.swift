@@ -11,25 +11,24 @@ struct ContentView: View {
     @State private var backgroundColour = Color.red
     
     var body: some View {
-        Text("Hello, world!")
-            .padding()
-            .background(backgroundColour)
-        
-        Text("Change Colour")
-            .padding()
-            .contextMenu {
-                Button("Red") {
-                    backgroundColour = .red
+        List {
+            Text("Paul Hudson")
+                .swipeActions {
+                    Button(role: .destructive) {
+                        print("Hey")
+                    } label: {
+                        Image(systemName: "trash")
+                    }
                 }
-                
-                Button("Greed") {
-                    backgroundColour = .green
+                .swipeActions(edge: .leading) {
+                    Button {
+                        print("Pinning")
+                    } label: {
+                        Image(systemName: "pin")
+                    }
+                    .tint(.orange)
                 }
-                
-                Button("Blue") {
-                    backgroundColour = .blue
-                }
-            }
+        }
     }
 }
 
