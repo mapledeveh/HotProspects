@@ -7,28 +7,15 @@
 
 import SwiftUI
 
-@MainActor class DelayedUpdater: ObservableObject {
-//    @Published var value = 0
-    var value = 0 {
-        willSet {
-            objectWillChange.send()
-        }
-    }
-    
-    init() {
-        for i in 1...10 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i)) {
-                self.value += 1
-            }
-        }
-    }
-}
-
 struct ContentView: View {
-    @StateObject private var updater = DelayedUpdater()
-    
     var body: some View {
-        Text("Value is \(updater.value)")
+        Image("example")
+            .interpolation(.none)
+            .resizable()
+            .scaledToFit()
+            .frame(maxHeight: .infinity)
+            .background(.black)
+            .ignoresSafeArea()
     }
 }
 
