@@ -6,29 +6,19 @@
 //
 
 import SwiftUI
+import SamplePackage
 
 struct ContentView: View {
-    @State private var backgroundColour = Color.red
+    let possibleNumbers = Array(1...60)
     
     var body: some View {
-        List {
-            Text("Paul Hudson")
-                .swipeActions {
-                    Button(role: .destructive) {
-                        print("Hey")
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                }
-                .swipeActions(edge: .leading) {
-                    Button {
-                        print("Pinning")
-                    } label: {
-                        Image(systemName: "pin")
-                    }
-                    .tint(.orange)
-                }
-        }
+        Text(results)
+    }
+    
+    var results: String {
+        let selected = possibleNumbers.random(7).sorted()
+        let strings = selected.map(String.init)
+        return strings.joined(separator: ", ")
     }
 }
 
