@@ -16,6 +16,7 @@ struct ProspectsView: View {
     
     @EnvironmentObject var prospects: Prospects
     @State private var isShowingScanner = false
+    @State private var isShowingSort = false
     
     let filter: FilterType
     
@@ -49,6 +50,7 @@ struct ProspectsView: View {
             let person = Prospect()
             person.name = details[0]
             person.emailAdress = details[1]
+            person.dateAdded = Date.now
             prospects.add(person)
         case .failure(let error):
             print("Scanning failed: \(error.localizedDescription)")
@@ -92,11 +94,27 @@ struct ProspectsView: View {
         NavigationView {
             List {
                 ForEach(filteredProspects) { prospect in
-                    VStack(alignment: .leading) {
-                        Text(prospect.name)
-                            .font(.headline)
-                        Text(prospect.emailAdress)
-                            .font(.subheadline)
+                    HStack {
+                        if filter == .none {
+                            if prospect.isContacted {
+                                Image(systemName: "checkmark.message.fill")
+                                    .foregroundColor(.green)
+                            } else {
+                                Image(systemName: "ellipsis.message")
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text(prospect.name)
+                                .font(.headline)
+                            Text(prospect.emailAdress)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Text(prospect.wrappedDateAdded.formatted(date: .numeric, time: .omitted))
+                            .font(.caption)
                             .foregroundColor(.secondary)
                     }
                     .swipeActions {
@@ -127,17 +145,38 @@ struct ProspectsView: View {
             }
             .navigationTitle(title)
             .toolbar {
-                Button {
-                    isShowingScanner = true
-                } label: {
-                    Label("Scan", systemImage: "qrcode.viewfinder")
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        isShowingScanner = true
+                    } label: {
+                        Label("Scan", systemImage: "qrcode.viewfinder")
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Sort") {
+                        isShowingSort = true
+                    }
                 }
             }
             .sheet(isPresented: $isShowingScanner) {
-                CodeScannerView(codeTypes: [.qr], simulatedData: "Alex Nguyen\nalexnguyen@canistel.ca", completion: handleScan)
+                CodeScannerView(codeTypes: [.qr], simulatedData: "\(randomNames.randomElement() ?? "George")\nalexnguyen@canistel.ca", completion: handleScan)
+            }
+            .confirmationDialog("Choose", isPresented: $isShowingSort) {
+                Button("Name") {
+                    prospects.sorted(.name)
+                }
+                
+                Button("Most Recent") {
+                    prospects.sorted(.recent)
+                }
+            } message: {
+                Text("Sort by")
             }
         }
     }
+    
+    let randomNames = ["Alex", "Bobby", "Chris", "Dave", "Ed", "Frank"]
 }
 
 struct ProspectsView_Previews: PreviewProvider {
